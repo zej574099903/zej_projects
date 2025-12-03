@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import styles from './resume.module.css';
 
 export const metadata = {
@@ -11,7 +12,7 @@ export default function ResumePage() {
       {/* 头部信息 */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
         <div>
-          <h1 className="text-4xl font-bold mb-2">周恩军</h1>
+          <h1 className="text-4xl font-bold mb-2">Liora</h1>
           <p className="text-xl text-gray-600 mb-4">高级前端开发工程师</p>
           <div className="flex flex-wrap gap-4 text-sm text-gray-500">
             <span className="flex items-center gap-1">
@@ -26,11 +27,16 @@ export default function ResumePage() {
           </div>
         </div>
         
-        {/* 可以在这里放一个头像 */}
-        <div className="w-24 h-24 bg-gray-200 rounded-full flex-shrink-0 overflow-hidden">
-          <div className="w-full h-full flex items-center justify-center text-gray-400">
-            Avatar
-          </div>
+        {/* 头像 */}
+        <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-gray-100 shadow-sm">
+          <Image
+            src="/avatar.jpg"
+            alt="Liora Avatar"
+            fill
+            className="object-cover"
+            sizes="96px"
+            priority
+          />
         </div>
       </header>
 

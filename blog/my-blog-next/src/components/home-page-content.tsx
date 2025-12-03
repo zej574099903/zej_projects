@@ -24,12 +24,16 @@ export default function HomePageContent({ posts }: { posts: PostData[] }) {
   };
 
   return (
-    <div className="space-y-20">
+    <div className="space-y-20 relative">
+      {/* 全局背景装饰 */}
+      <div className="absolute inset-0 -z-20 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
+      
       {/* Hero Section */}
       <section className="relative pt-20 pb-16 text-center lg:pt-32 lg:pb-24">
-        {/* 背景装饰：弥散光感 - 调整透明度和混合模式 */}
-        <div className="absolute top-0 left-1/2 -z-10 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-blue-500/20 blur-[120px] opacity-50 mix-blend-screen dark:bg-blue-600/10" />
-        <div className="absolute bottom-0 right-0 -z-10 h-[300px] w-[300px] rounded-full bg-purple-500/20 blur-[100px] opacity-50 mix-blend-screen dark:bg-purple-600/10" />
+        {/* 背景装饰：弥散光感 - 针对亮色模式优化 */}
+        <div className="absolute top-0 left-1/2 -z-10 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-blue-400/20 blur-[120px] opacity-60 mix-blend-multiply" />
+        <div className="absolute top-20 right-0 -z-10 h-[500px] w-[500px] rounded-full bg-purple-400/20 blur-[100px] opacity-50 mix-blend-multiply" />
+        <div className="absolute bottom-0 left-20 -z-10 h-[400px] w-[400px] rounded-full bg-indigo-400/20 blur-[100px] opacity-40 mix-blend-multiply" />
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -45,7 +49,7 @@ export default function HomePageContent({ posts }: { posts: PostData[] }) {
           
           {/* 调整：dark:text-gray-200，提升正文亮度 */}
           <p className="mx-auto mb-8 max-w-2xl text-lg text-gray-600 dark:text-gray-200 sm:text-xl leading-relaxed">
-            你好，我是 <span className="font-bold text-gray-900 dark:text-white underline decoration-blue-500/30 decoration-2 underline-offset-4">周恩军</span>。
+            你好，我是 <span className="font-bold text-gray-900 dark:text-white underline decoration-blue-500/30 decoration-2 underline-offset-4">Liora</span>。
             <br />
             一名热衷于构建极致用户体验的前端工程师。
             这里记录我的代码、思考与创造。
@@ -86,9 +90,9 @@ export default function HomePageContent({ posts }: { posts: PostData[] }) {
               key={id} 
               variants={item}
               className={cn(
-                "group relative flex flex-col justify-between rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all hover:shadow-md dark:border-gray-700 dark:bg-slate-900/60 dark:backdrop-blur-md",
-                // 调整：第一篇文章背景色在 dark 模式下更深更透
-                index === 0 && "md:col-span-2 lg:col-span-2 bg-gradient-to-br from-blue-50 to-white dark:from-slate-800/50 dark:to-transparent"
+                "group relative flex flex-col justify-between rounded-2xl bg-white p-6 shadow-sm transition-all hover:shadow-xl hover:-translate-y-1 ring-1 ring-gray-200/50",
+                // 第一篇文章作为 Feature Post，给予特殊的渐变背景
+                index === 0 && "md:col-span-2 lg:col-span-2 bg-gradient-to-br from-white via-blue-50/30 to-white"
               )}
             >
               <div>
