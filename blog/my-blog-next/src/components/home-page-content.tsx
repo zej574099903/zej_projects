@@ -83,54 +83,96 @@ export default function HomePageContent({ posts }: { posts: PostData[] }) {
           variants={container}
           initial="hidden"
           animate="show"
-          className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+          className="grid gap-6"
         >
-          {posts.slice(0, 3).map(({ id, date, title, description, tags }, index) => (
-            <motion.article 
-              key={id} 
+          {/* Feature Post (第一篇) - 横向通栏布局 */}
+          {posts.length > 0 && (
+            <motion.article
+              key={posts[0].id}
               variants={item}
-              className={cn(
-                "group relative flex flex-col justify-between rounded-2xl bg-white p-6 shadow-sm transition-all hover:shadow-xl hover:-translate-y-1 ring-1 ring-gray-200/50",
-                // 第一篇文章作为 Feature Post，给予特殊的渐变背景
-                index === 0 && "md:col-span-2 lg:col-span-2 bg-gradient-to-br from-white via-blue-50/30 to-white"
-              )}
+              className="group relative overflow-hidden rounded-3xl bg-white p-8 shadow-lg ring-1 ring-gray-200/50 transition-all hover:shadow-xl hover:-translate-y-1 hover:ring-blue-100"
             >
-              <div>
-                <div className="flex items-center justify-between gap-4 text-xs text-gray-500 dark:text-gray-400 mb-4">
-                  <time className="flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
-                    {date}
-                  </time>
+              {/* 装饰背景 */}
+              <div className="absolute top-0 right-0 -z-10 h-[300px] w-[300px] translate-x-1/3 -translate-y-1/3 rounded-full bg-blue-50/50 blur-3xl transition-all group-hover:bg-blue-100/50" />
+              
+              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+                <div className="flex-1 space-y-4">
+                  <div className="flex flex-wrap gap-2">
+                    {posts[0].tags?.map(tag => (
+                      <span key={tag} className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-600 ring-1 ring-blue-100/50">
+                        {tag}
+                      </span>
+                    ))}
+                    <time className="flex items-center gap-1 text-sm text-gray-400 pl-2 border-l border-gray-200">
+                      <Calendar className="h-3.5 w-3.5" />
+                      {posts[0].date}
+                    </time>
+                  </div>
+
+                  <h3 className="text-3xl font-bold tracking-tight text-gray-900 group-hover:text-blue-600 transition-colors">
+                    <Link href={`/posts/${posts[0].id}`}>
+                      <span className="absolute inset-0" />
+                      {posts[0].title}
+                    </Link>
+                  </h3>
+
+                  <p className="text-gray-500 leading-relaxed line-clamp-2 max-w-2xl text-lg">
+                    {posts[0].description}
+                  </p>
+                </div>
+
+                <div className="flex-shrink-0 self-end md:self-center">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-400 transition-all group-hover:border-blue-200 group-hover:bg-blue-50 group-hover:text-blue-600">
+                    <ArrowRight className="h-5 w-5" />
+                  </div>
+                </div>
+              </div>
+            </motion.article>
+          )}
+
+          {/* Secondary Posts (后两篇) - 并排布局 */}
+          <div className="grid gap-6 md:grid-cols-2">
+            {posts.slice(1, 3).map(({ id, date, title, description, tags }) => (
+              <motion.article 
+                key={id} 
+                variants={item}
+                className="group relative flex flex-col justify-between rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200/50 transition-all hover:shadow-lg hover:-translate-y-1 hover:ring-gray-300/50"
+              >
+                <div>
+                  <div className="flex items-center justify-between gap-4 text-xs text-gray-500 mb-4">
+                    <time className="flex items-center gap-1">
+                      <Calendar className="h-3 w-3" />
+                      {date}
+                    </time>
+                  </div>
+
+                  <h3 className="mb-3 text-xl font-bold tracking-tight text-gray-900 group-hover:text-blue-600 transition-colors">
+                    <Link href={`/posts/${id}`}>
+                      <span className="absolute inset-0" />
+                      {title}
+                    </Link>
+                  </h3>
+
+                  <p className="text-gray-500 line-clamp-2 leading-relaxed text-sm mb-4">
+                    {description}
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-50">
                   <div className="flex gap-2">
                     {tags?.slice(0, 2).map(tag => (
-                      // 调整：标签背景色更亮一点，文字更亮
-                      <span key={tag} className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 font-medium text-gray-600 dark:bg-slate-800 dark:text-gray-200">
-                        <Tag className="h-3 w-3" />
+                      <span key={tag} className="inline-flex items-center rounded-full bg-gray-50 px-2 py-0.5 text-xs font-medium text-gray-600">
                         {tag}
                       </span>
                     ))}
                   </div>
+                  <span className="text-blue-600 opacity-0 transition-opacity group-hover:opacity-100">
+                    <ArrowRight className="h-4 w-4" />
+                  </span>
                 </div>
-
-                {/* 调整：文章标题 hover 颜色 */}
-                <h3 className="mb-3 text-xl font-bold tracking-tight text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                  <Link href={`/posts/${id}`}>
-                    <span className="absolute inset-0" />
-                    {title}
-                  </Link>
-                </h3>
-
-                {/* 调整：文章摘要颜色提亮到 gray-300 */}
-                <p className="text-gray-600 dark:text-gray-300 line-clamp-3 leading-relaxed">
-                  {description}
-                </p>
-              </div>
-
-              <div className="mt-6 flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 opacity-0 transition-opacity group-hover:opacity-100">
-                阅读更多 <ArrowRight className="ml-1 h-4 w-4" />
-              </div>
-            </motion.article>
-          ))}
+              </motion.article>
+            ))}
+          </div>
         </motion.div>
       </section>
     </div>
