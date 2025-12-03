@@ -75,7 +75,7 @@ export function getSortedPostsData() {
 ### 项目展示 (Projects)
 为了更好地展示我的作品，我复用了 Markdown 渲染管线，创建了 `content/projects` 目录。每个项目都有独立的详情页，包含演示链接、源码仓库地址和技术栈标签。
 
-## 4. 体验优化：暗色模式
+## 4. 体验优化：暗色模式(暂时隐藏,后期需要重新设计)
 
 作为一个现代化的博客，Dark Mode 是必不可少的。我使用了 `next-themes` 来处理主题切换逻辑，并配合 Tailwind CSS 的 `dark:` 前缀来实现样式适配。
 

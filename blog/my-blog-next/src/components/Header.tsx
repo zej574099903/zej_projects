@@ -28,7 +28,8 @@ export default function Header() {
             </Link>
           </nav>
           
-          <ModeToggle />
+          {/* 暗黑模式暂时隐藏，待 UI 重新设计后再上线 */}
+          {/* <ModeToggle /> */}
         </div>
       </div>
     </header>

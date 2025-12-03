@@ -27,9 +27,9 @@ export default function HomePageContent({ posts }: { posts: PostData[] }) {
     <div className="space-y-20">
       {/* Hero Section */}
       <section className="relative pt-20 pb-16 text-center lg:pt-32 lg:pb-24">
-        {/* 背景装饰：弥散光感 */}
-        <div className="absolute top-0 left-1/2 -z-10 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-blue-500/20 blur-[100px] dark:bg-blue-500/10" />
-        <div className="absolute bottom-0 right-0 -z-10 h-[300px] w-[300px] rounded-full bg-purple-500/20 blur-[80px] dark:bg-purple-500/10" />
+        {/* 背景装饰：弥散光感 - 调整透明度和混合模式 */}
+        <div className="absolute top-0 left-1/2 -z-10 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-blue-500/20 blur-[120px] opacity-50 mix-blend-screen dark:bg-blue-600/10" />
+        <div className="absolute bottom-0 right-0 -z-10 h-[300px] w-[300px] rounded-full bg-purple-500/20 blur-[100px] opacity-50 mix-blend-screen dark:bg-purple-600/10" />
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -37,13 +37,15 @@ export default function HomePageContent({ posts }: { posts: PostData[] }) {
           transition={{ duration: 0.5 }}
           className="mx-auto max-w-3xl px-4"
         >
-          <h1 className="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 bg-clip-text text-5xl font-bold tracking-tight text-transparent dark:from-white dark:via-gray-200 dark:to-white sm:text-7xl mb-6">
+          {/* 调整：dark 模式下使用 from-white via-gray-100 to-gray-300，确保非常亮 */}
+          <h1 className="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 bg-clip-text text-5xl font-bold tracking-tight text-transparent dark:from-white dark:via-gray-100 dark:to-gray-300 sm:text-7xl mb-6">
             Designing the <br />
             <span className="text-blue-600 dark:text-blue-400">Future of Web</span>
           </h1>
           
-          <p className="mx-auto mb-8 max-w-2xl text-lg text-gray-600 dark:text-gray-300 sm:text-xl leading-relaxed">
-            你好，我是 <span className="font-semibold text-gray-900 dark:text-white">周恩军</span>。
+          {/* 调整：dark:text-gray-200，提升正文亮度 */}
+          <p className="mx-auto mb-8 max-w-2xl text-lg text-gray-600 dark:text-gray-200 sm:text-xl leading-relaxed">
+            你好，我是 <span className="font-bold text-gray-900 dark:text-white underline decoration-blue-500/30 decoration-2 underline-offset-4">周恩军</span>。
             <br />
             一名热衷于构建极致用户体验的前端工程师。
             这里记录我的代码、思考与创造。
@@ -64,6 +66,7 @@ export default function HomePageContent({ posts }: { posts: PostData[] }) {
       {/* Blog Posts Section */}
       <section className="mx-auto max-w-5xl px-4">
         <div className="flex items-center justify-between mb-10">
+          {/* 调整：dark:text-white，纯白标题 */}
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
             精选文章
           </h2>
@@ -83,9 +86,9 @@ export default function HomePageContent({ posts }: { posts: PostData[] }) {
               key={id} 
               variants={item}
               className={cn(
-                "group relative flex flex-col justify-between rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all hover:shadow-md dark:border-gray-800 dark:bg-gray-900/50",
-                // 第一篇文章在桌面端跨两列，作为 Feature Post
-                index === 0 && "md:col-span-2 lg:col-span-2 bg-gradient-to-br from-blue-50 to-white dark:from-blue-950/20 dark:to-gray-900/50"
+                "group relative flex flex-col justify-between rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all hover:shadow-md dark:border-gray-700 dark:bg-slate-900/60 dark:backdrop-blur-md",
+                // 调整：第一篇文章背景色在 dark 模式下更深更透
+                index === 0 && "md:col-span-2 lg:col-span-2 bg-gradient-to-br from-blue-50 to-white dark:from-slate-800/50 dark:to-transparent"
               )}
             >
               <div>
@@ -96,7 +99,8 @@ export default function HomePageContent({ posts }: { posts: PostData[] }) {
                   </time>
                   <div className="flex gap-2">
                     {tags?.slice(0, 2).map(tag => (
-                      <span key={tag} className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                      // 调整：标签背景色更亮一点，文字更亮
+                      <span key={tag} className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 font-medium text-gray-600 dark:bg-slate-800 dark:text-gray-200">
                         <Tag className="h-3 w-3" />
                         {tag}
                       </span>
@@ -104,6 +108,7 @@ export default function HomePageContent({ posts }: { posts: PostData[] }) {
                   </div>
                 </div>
 
+                {/* 调整：文章标题 hover 颜色 */}
                 <h3 className="mb-3 text-xl font-bold tracking-tight text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                   <Link href={`/posts/${id}`}>
                     <span className="absolute inset-0" />
@@ -111,6 +116,7 @@ export default function HomePageContent({ posts }: { posts: PostData[] }) {
                   </Link>
                 </h3>
 
+                {/* 调整：文章摘要颜色提亮到 gray-300 */}
                 <p className="text-gray-600 dark:text-gray-300 line-clamp-3 leading-relaxed">
                   {description}
                 </p>
