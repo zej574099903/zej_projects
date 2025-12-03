@@ -1,0 +1,128 @@
+"use client";
+
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { ArrowRight, Calendar, Tag } from 'lucide-react';
+import { type PostData } from '@/lib/posts';
+import { cn } from '@/lib/utils';
+
+export default function HomePageContent({ posts }: { posts: PostData[] }) {
+  // 动画变体配置
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
+  };
+
+  return (
+    <div className="space-y-20">
+      {/* Hero Section */}
+      <section className="relative pt-20 pb-16 text-center lg:pt-32 lg:pb-24">
+        {/* 背景装饰：弥散光感 */}
+        <div className="absolute top-0 left-1/2 -z-10 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-blue-500/20 blur-[100px] dark:bg-blue-500/10" />
+        <div className="absolute bottom-0 right-0 -z-10 h-[300px] w-[300px] rounded-full bg-purple-500/20 blur-[80px] dark:bg-purple-500/10" />
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mx-auto max-w-3xl px-4"
+        >
+          <h1 className="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 bg-clip-text text-5xl font-bold tracking-tight text-transparent dark:from-white dark:via-gray-200 dark:to-white sm:text-7xl mb-6">
+            Designing the <br />
+            <span className="text-blue-600 dark:text-blue-400">Future of Web</span>
+          </h1>
+          
+          <p className="mx-auto mb-8 max-w-2xl text-lg text-gray-600 dark:text-gray-300 sm:text-xl leading-relaxed">
+            你好，我是 <span className="font-semibold text-gray-900 dark:text-white">周恩军</span>。
+            <br />
+            一名热衷于构建极致用户体验的前端工程师。
+            这里记录我的代码、思考与创造。
+          </p>
+
+          <div className="flex justify-center gap-4">
+            <Link 
+              href="/posts"
+              className="group inline-flex items-center justify-center rounded-full bg-gray-900 px-8 py-3 text-sm font-semibold text-white transition-all hover:bg-gray-700 hover:shadow-lg dark:bg-white dark:text-black dark:hover:bg-gray-200"
+            >
+              阅读文章
+              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Link>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Blog Posts Section */}
+      <section className="mx-auto max-w-5xl px-4">
+        <div className="flex items-center justify-between mb-10">
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+            精选文章
+          </h2>
+          <Link href="/posts" className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
+            查看全部 <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+        
+        <motion.div 
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+        >
+          {posts.slice(0, 3).map(({ id, date, title, description, tags }, index) => (
+            <motion.article 
+              key={id} 
+              variants={item}
+              className={cn(
+                "group relative flex flex-col justify-between rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all hover:shadow-md dark:border-gray-800 dark:bg-gray-900/50",
+                // 第一篇文章在桌面端跨两列，作为 Feature Post
+                index === 0 && "md:col-span-2 lg:col-span-2 bg-gradient-to-br from-blue-50 to-white dark:from-blue-950/20 dark:to-gray-900/50"
+              )}
+            >
+              <div>
+                <div className="flex items-center justify-between gap-4 text-xs text-gray-500 dark:text-gray-400 mb-4">
+                  <time className="flex items-center gap-1">
+                    <Calendar className="h-3 w-3" />
+                    {date}
+                  </time>
+                  <div className="flex gap-2">
+                    {tags?.slice(0, 2).map(tag => (
+                      <span key={tag} className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                        <Tag className="h-3 w-3" />
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <h3 className="mb-3 text-xl font-bold tracking-tight text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  <Link href={`/posts/${id}`}>
+                    <span className="absolute inset-0" />
+                    {title}
+                  </Link>
+                </h3>
+
+                <p className="text-gray-600 dark:text-gray-300 line-clamp-3 leading-relaxed">
+                  {description}
+                </p>
+              </div>
+
+              <div className="mt-6 flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 opacity-0 transition-opacity group-hover:opacity-100">
+                阅读更多 <ArrowRight className="ml-1 h-4 w-4" />
+              </div>
+            </motion.article>
+          ))}
+        </motion.div>
+      </section>
+    </div>
+  );
+}

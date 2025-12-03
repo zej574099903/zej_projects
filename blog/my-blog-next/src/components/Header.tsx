@@ -17,8 +17,8 @@ export default function Header() {
         <div className="flex items-center gap-6">
           {/* 右侧导航菜单 */}
           <nav className="flex gap-6 text-gray-600 dark:text-gray-400">
-            <Link href="/" className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors">
-              首页
+            <Link href="/posts" className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors">
+              文章
             </Link>
             {/* <Link href="/about" className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors">
               关于
