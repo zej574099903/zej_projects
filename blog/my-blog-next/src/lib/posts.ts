@@ -1,8 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import { remark } from 'remark';
-import html from 'remark-html';
+import { unified } from 'unified';
+import remarkParse from 'remark-parse';
+import remarkRehype from 'remark-rehype';
+import rehypePrettyCode from 'rehype-pretty-code';
+import rehypeStringify from 'rehype-stringify';
 
 // 定义文章元数据的类型
 export interface PostData {
@@ -84,10 +87,26 @@ export async function getPostData(id: string) {
   // 使用 gray-matter 解析 frontmatter
   const matterResult = matter(fileContents);
 
-  // 使用 remark 将 markdown 转换为 HTML 字符串
-  const processedContent = await remark()
-    .use(html)
+  // 使用 unified 管道将 markdown 转换为 HTML
+  const processedContent = await unified()
+    .use(remarkParse) // 解析 markdown
+    .use(remarkRehype) // 转换为 HTML AST
+    // @ts-expect-error rehype-pretty-code type mismatch
+    .use(rehypePrettyCode, {
+      // 代码高亮配置
+      theme: 'github-dark',
+      // 防止代码块背景色与 tailwind typography 冲突
+      keepBackground: true,
+      onVisitLine(node: any) {
+        // 防止空行塌陷
+        if (node.children.length === 0) {
+          node.children = [{ type: 'text', value: ' ' }];
+        }
+      },
+    })
+    .use(rehypeStringify) // 转换为 HTML 字符串
     .process(matterResult.content);
+
   const contentHtml = processedContent.toString();
 
   // 组合 id, contentHtml 和 frontmatter 数据
