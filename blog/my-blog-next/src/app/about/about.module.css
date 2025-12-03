@@ -1,0 +1,13 @@
+.container {
+  padding: 2rem;
+  background-color: var(--background);
+  border: 1px solid #eee;
+  border-radius: 8px;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--foreground);
+  margin-bottom: 1rem;
+}
