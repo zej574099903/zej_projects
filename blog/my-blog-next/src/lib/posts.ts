@@ -91,7 +91,6 @@ export async function getPostData(id: string) {
   const processedContent = await unified()
     .use(remarkParse) // 解析 markdown
     .use(remarkRehype) // 转换为 HTML AST
-    // @ts-expect-error rehype-pretty-code type mismatch
     .use(rehypePrettyCode, {
       // 代码高亮配置
       theme: 'github-dark',
