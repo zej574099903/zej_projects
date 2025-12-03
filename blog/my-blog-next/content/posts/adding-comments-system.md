@@ -1,6 +1,7 @@
 ---
 title: "给 Next.js 博客安个家：集成 Giscus 评论系统"
 date: "2025-11-26"
+category: "Engineering"
 tags: ["Next.js", "Giscus", "GitHub Discussions", "React"]
 description: "一个好的博客不仅是输出，更是交流。本文记录了我如何放弃笨重的 Disqus，选择轻量级、无广告且极客范十足的 Giscus 作为评论系统，并将其完美集成到 Next.js 15 中。"
 ---

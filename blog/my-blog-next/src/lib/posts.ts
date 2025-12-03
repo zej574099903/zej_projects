@@ -13,6 +13,7 @@ export interface PostData {
   title: string;
   date: string;
   tags: string[];
+  category: string;
   description: string;
   contentHtml?: string;
 }
@@ -46,7 +47,7 @@ export function getSortedPostsData(): PostData[] {
     // 组合 id 和 frontmatter 数据
     return {
       id,
-      ...(matterResult.data as { title: string; date: string; tags: string[]; description: string }),
+      ...(matterResult.data as { title: string; date: string; tags: string[]; category: string; description: string }),
     };
   });
 
@@ -112,6 +113,6 @@ export async function getPostData(id: string) {
   return {
     id,
     contentHtml,
-    ...(matterResult.data as { title: string; date: string; tags: string[]; description: string }),
+    ...(matterResult.data as { title: string; date: string; tags: string[]; category: string; description: string }),
   };
 }

@@ -1,6 +1,7 @@
 ---
 title: "Next.js 博客 SEO 实战指南：从 Sitemap 到 Open Graph"
 date: "2025-11-12"
+category: "Next.js"
 tags: ["Next.js", "SEO", "Sitemap", "Open Graph"]
 description: "酒香也怕巷子深。为了让我的博客能被更多人看到，我对其进行了全面的 SEO 优化。本文详细介绍了如何在 Next.js App Router 中配置 Metadata、生成 Sitemap 和 Robots.txt。"
 ---

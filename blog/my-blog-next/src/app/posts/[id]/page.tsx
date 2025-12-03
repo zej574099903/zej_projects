@@ -1,6 +1,7 @@
 import { getAllPostIds, getPostData } from '@/lib/posts';
 import { Comments } from '@/components/comments';
 import { Metadata } from 'next';
+import { Folder } from 'lucide-react';
 
 interface Props {
   params: Promise<{
@@ -30,6 +31,12 @@ export default async function Post({ params }: Props) {
   return (
     <article className="max-w-3xl mx-auto">
       <header className="mb-8 text-center">
+        {postData.category && (
+          <div className="flex items-center justify-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 mb-4">
+            <Folder className="w-4 h-4" />
+            {postData.category}
+          </div>
+        )}
         <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-50 sm:text-4xl mb-2">
           {postData.title}
         </h1>

@@ -1,6 +1,7 @@
 ---
 title: "为 Next.js 博客添加 cmdk 全局搜索：打造极致交互体验"
 date: "2025-12-03"
+category: "Engineering"
 tags: ["Next.js", "cmdk", "Search", "React", "UI/UX"]
 description: "在这个信息过载的时代，一个高效的全局搜索功能是提升博客用户体验的关键。本文记录了我如何使用 cmdk 库实现 macOS Spotlight 风格的命令面板，并解决了 Radix UI 的可访问性报错等棘手问题。"
 ---
