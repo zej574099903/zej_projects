@@ -1,6 +1,6 @@
 ---
 title: "博客装修记：使用 Rehype Pretty Code 实现极致代码高亮"
-date: "2025-12-03"
+date: "2025-11-19"
 tags: ["Next.js", "Syntax Highlighting", "TailwindCSS", "Rehype"]
 description: "一个没有代码高亮的技术博客是没有灵魂的。本文记录了我如何从 remark-html 迁移到 unified 管线，并使用 Rehype Pretty Code 实现类似 VS Code 的代码渲染效果，以及中间遇到的 Tailwind CSS 4.0 语法大坑。"
 ---

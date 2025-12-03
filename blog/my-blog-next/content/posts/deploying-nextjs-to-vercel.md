@@ -1,6 +1,6 @@
 ---
 title: "避坑指南：将 Next.js 子目录项目部署到 Vercel"
-date: "2025-12-03"
+date: "2025-11-05"
 tags: ["Vercel", "Deployment", "Monorepo", "Git"]
 description: "当你的 Next.js 项目不是 Git 仓库的根目录时，部署到 Vercel 可能会遇到 404 错误。本文详细记录了如何解决这个问题。"
 ---
