@@ -18,8 +18,11 @@ export default function Header() {
           <Link href="/" className="hover:text-gray-900 transition-colors">
             首页
           </Link>
-          <Link href="/about" className="hover:text-gray-900 transition-colors">
+          {/* <Link href="/about" className="hover:text-gray-900 transition-colors">
             关于
+          </Link> */}
+          <Link href="/resume" className="hover:text-gray-900 transition-colors">
+            简历
           </Link>
         </nav>
       </div>

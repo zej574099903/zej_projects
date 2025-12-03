@@ -1,0 +1,51 @@
+.container {
+  max-width: 1024px;
+  margin: 0 auto;
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #f3f4f6;
+  color: var(--foreground);
+}
+
+.timelineItem {
+  position: relative;
+  padding-left: 1.5rem;
+  border-left: 2px solid #e5e7eb;
+}
+
+.timelineDot {
+  position: absolute;
+  left: -0.35rem;
+  top: 0.35rem;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background-color: #e5e7eb;
+  border: 2px solid #fff;
+}
+
+.timelineItem:hover .timelineDot {
+  background-color: #2563eb;
+  transform: scale(1.2);
+  transition: all 0.2s;
+}
+
+@media print {
+  .no-print {
+    display: none;
+  }
+  
+  body {
+    background: white;
+  }
+  
+  .container {
+    max-width: 100%;
+    padding: 0;
+  }
+}
