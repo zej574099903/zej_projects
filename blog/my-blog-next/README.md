@@ -64,4 +64,12 @@ my-blog-next/
 
 部署 Next.js 应用最简单的方法是使用 Next.js 创作者开发的 [Vercel 平台](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme)。
 
+### 子目录部署注意事项
+
+如果本项目作为子目录存在于 Git 仓库中（例如 Monorepo 结构），在 Vercel 导入项目后，需要进行以下配置：
+
+1.  进入项目 **Settings** -> **General**。
+2.  将 **Root Directory** 设置为项目的实际路径（例如 `blog/my-blog-next`）。
+3.  保存并重新部署。
+
 查看我们的 [Next.js 部署文档](https://nextjs.org/docs/app/building-your-application/deploying) 以获取更多详细信息。

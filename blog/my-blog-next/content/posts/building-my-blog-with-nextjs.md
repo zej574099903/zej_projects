@@ -65,32 +65,32 @@ export function getSortedPostsData() {
 }
 ```
 
-## 3. 界面与交互
+## 3. 扩展功能：简历与项目集
 
-### 统一布局 (Layout)
+博客不仅仅是写文章的地方，更是展示个人能力的窗口。因此我增加了两个独立模块：
 
-为了保证全站体验一致，我构建了全局的 `RootLayout`，包含：
-- **Header**: 顶部导航，支持响应式。
-- **Footer**: 底部版权信息。
-- **Main**: 内容区域，使用 `flex-1` 确保内容不足时 Footer 依然沉底。
+### 个人简历 (Resume)
+我设计了一个独立的 `/resume` 页面，采用左右分栏布局，展示我的技能清单、工作经历和教育背景。为了增强交互性，我在工作经历中嵌入了时间轴，并与项目集进行了关联。
 
-### 详情页渲染
+### 项目展示 (Projects)
+为了更好地展示我的作品，我复用了 Markdown 渲染管线，创建了 `content/projects` 目录。每个项目都有独立的详情页，包含演示链接、源码仓库地址和技术栈标签。
 
-文章详情页使用了动态路由 `src/app/posts/[id]/page.tsx`。最让我满意的是使用了 `dangerouslySetInnerHTML` 配合 Tailwind 的 `prose` 插件，只用一行代码就实现了完美的排版：
+## 4. 体验优化：暗色模式
+
+作为一个现代化的博客，Dark Mode 是必不可少的。我使用了 `next-themes` 来处理主题切换逻辑，并配合 Tailwind CSS 的 `dark:` 前缀来实现样式适配。
 
 ```tsx
-<div 
-  className="prose prose-lg prose-slate max-w-none dark:prose-invert"
-  dangerouslySetInnerHTML={{ __html: postData.contentHtml }} 
-/>
+// src/components/mode-toggle.tsx
+export function ModeToggle() {
+  const { theme, setTheme } = useTheme()
+  // ...
+}
 ```
 
-## 4. 未来规划
+最棒的是 Tailwind Typography 插件支持 `dark:prose-invert`，这让我的 Markdown 文章在深色模式下能自动反转颜色，阅读体验极佳。
 
-目前的博客只是一个开始，接下来我计划完成以下模块：
+## 5. 总结
 
-1.  **个人简历页 (Resume)**：一个独立的交互式页面，展示我的个人信息。
-2.  **项目集 (Projects)**：展示我做过的有趣项目，并支持筛选。
-3.  **暗色模式**：适配系统主题。
+从初始化项目到最终上线，这个过程让我对 Next.js App Router 有了更深的理解。前端开发的乐趣就在于此：你所想的，都能通过代码变成现实。
 
-前端开发的乐趣就在于此：你所想的，都能通过代码变成现实。欢迎持续关注！
+如果你对我是如何把这个博客部署到 Vercel 感兴趣，请查看我的下一篇文章：[《避坑指南：将 Next.js 子目录项目部署到 Vercel》](/posts/deploying-nextjs-to-vercel)。
