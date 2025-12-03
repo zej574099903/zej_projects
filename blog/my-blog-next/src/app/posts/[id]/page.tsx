@@ -1,4 +1,5 @@
 import { getAllPostIds, getPostData } from '@/lib/posts';
+import { Comments } from '@/components/comments';
 import { Metadata } from 'next';
 
 interface Props {
@@ -50,6 +51,8 @@ export default async function Post({ params }: Props) {
         className="prose prose-lg prose-slate max-w-none dark:prose-invert dark:prose-p:text-gray-300 dark:prose-headings:text-gray-100 dark:prose-strong:text-white"
         dangerouslySetInnerHTML={{ __html: postData.contentHtml || '' }} 
       />
+
+      <Comments />
     </article>
   );
 }
