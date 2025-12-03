@@ -18,8 +18,31 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "My Personal Blog",
-  description: "Welcome to my personal blog built with Next.js",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://zej-projects-955ocoomd-jhons-projects-97ec523f.vercel.app/'),
+  title: {
+    default: 'Liora Blog',
+    template: '%s | Liora Blog',
+  },
+  description: 'A personal blog about frontend development, Next.js, and design.',
+  openGraph: {
+    title: 'Liora Blog',
+    description: 'A personal blog about frontend development, Next.js, and design.',
+    url: 'https://zej-projects-955ocoomd-jhons-projects-97ec523f.vercel.app/',
+    siteName: 'Liora Blog',
+    locale: 'zh_CN',
+    type: 'website',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 export default function RootLayout({
