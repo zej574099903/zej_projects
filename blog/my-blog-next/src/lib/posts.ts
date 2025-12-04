@@ -6,6 +6,8 @@ import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import rehypePrettyCode from 'rehype-pretty-code';
 import rehypeStringify from 'rehype-stringify';
+import dbConnect from './db';
+import Post, { IPostDocument } from '@/models/Post';
 
 // 定义文章元数据的类型
 export interface PostData {
@@ -16,6 +18,7 @@ export interface PostData {
   category: string;
   description: string;
   contentHtml?: string;
+  source?: 'local' | 'database'; // 标识来源
 }
 
 // 博客文章存放的目录
@@ -23,36 +26,52 @@ const postsDirectory = path.join(process.cwd(), 'content/posts');
 
 /**
  * 获取所有文章列表（按日期排序）
+ * 支持混合数据源：本地 Markdown + MongoDB
  */
-export function getSortedPostsData(): PostData[] {
-  // 如果目录不存在，创建一个空数组返回，避免报错
-  if (!fs.existsSync(postsDirectory)) {
-    return [];
+export async function getSortedPostsData(): Promise<PostData[]> {
+  // 1. 获取本地 Markdown 文章
+  let localPosts: PostData[] = [];
+  if (fs.existsSync(postsDirectory)) {
+    const fileNames = fs.readdirSync(postsDirectory);
+    localPosts = fileNames.map((fileName) => {
+      const id = fileName.replace(/\.md$/, '');
+      const fullPath = path.join(postsDirectory, fileName);
+      const fileContents = fs.readFileSync(fullPath, 'utf8');
+      const matterResult = matter(fileContents);
+
+      return {
+        id,
+        ...(matterResult.data as { title: string; date: string; tags: string[]; category: string; description: string }),
+        source: 'local',
+      };
+    });
   }
 
-  // 获取目录下所有文件名
-  const fileNames = fs.readdirSync(postsDirectory);
+  // 2. 获取 MongoDB 文章
+  let dbPosts: PostData[] = [];
+  try {
+    await dbConnect();
+    // 只查询已发布的文章
+    const posts = await Post.find({ published: true }).sort({ date: -1 }).lean<IPostDocument[]>();
+    
+    dbPosts = posts.map((post) => ({
+      id: post.slug, // 使用 slug 作为 id
+      title: post.title,
+      date: new Date(post.date).toISOString().split('T')[0], // 格式化日期 YYYY-MM-DD
+      tags: post.tags,
+      category: post.category || 'Uncategorized',
+      description: post.excerpt || '',
+      source: 'database',
+    }));
+  } catch (error) {
+    console.error('Failed to fetch posts from database:', error);
+    // 数据库挂了不影响本地文章展示
+  }
+
+  // 3. 合并并排序
+  const allPosts = [...localPosts, ...dbPosts];
   
-  const allPostsData = fileNames.map((fileName) => {
-    // 去掉 ".md" 后缀作为 ID
-    const id = fileName.replace(/\.md$/, '');
-
-    // 读取 markdown 文件内容
-    const fullPath = path.join(postsDirectory, fileName);
-    const fileContents = fs.readFileSync(fullPath, 'utf8');
-
-    // 使用 gray-matter 解析 frontmatter
-    const matterResult = matter(fileContents);
-
-    // 组合 id 和 frontmatter 数据
-    return {
-      id,
-      ...(matterResult.data as { title: string; date: string; tags: string[]; category: string; description: string }),
-    };
-  });
-
-  // 按日期降序排序
-  return allPostsData.sort((a, b) => {
+  return allPosts.sort((a, b) => {
     if (a.date < b.date) {
       return 1;
     } else {
@@ -80,15 +99,45 @@ export function getAllPostIds() {
 
 /**
  * 获取单篇文章的详细数据
+ * 优先查找本地文件，如果不存在则查找数据库
  */
 export async function getPostData(id: string) {
+  let rawContent = '';
+  let frontmatterData: any = {};
+  let source: 'local' | 'database' = 'local';
+
   const fullPath = path.join(postsDirectory, `${id}.md`);
-  const fileContents = fs.readFileSync(fullPath, 'utf8');
 
-  // 使用 gray-matter 解析 frontmatter
-  const matterResult = matter(fileContents);
+  // 1. 尝试从本地读取
+  if (fs.existsSync(fullPath)) {
+    const fileContents = fs.readFileSync(fullPath, 'utf8');
+    const matterResult = matter(fileContents);
+    rawContent = matterResult.content;
+    frontmatterData = matterResult.data;
+  } 
+  // 2. 尝试从数据库读取
+  else {
+    await dbConnect();
+    // 查找 slug 匹配的文章
+    const post = await Post.findOne({ slug: id }).lean<IPostDocument>();
+    
+    if (!post) {
+      // 如果两边都找不到，抛出错误，页面会显示 404
+      throw new Error(`Post not found: ${id}`);
+    }
 
-  // 使用 unified 管道将 markdown 转换为 HTML
+    rawContent = post.content;
+    frontmatterData = {
+      title: post.title,
+      date: new Date(post.date).toISOString().split('T')[0],
+      tags: post.tags,
+      category: post.category || 'Uncategorized',
+      description: post.excerpt || '',
+    };
+    source = 'database';
+  }
+
+  // 3. 使用 unified 管道将 markdown 转换为 HTML
   const processedContent = await unified()
     .use(remarkParse) // 解析 markdown
     .use(remarkRehype) // 转换为 HTML AST
@@ -105,7 +154,7 @@ export async function getPostData(id: string) {
       },
     })
     .use(rehypeStringify) // 转换为 HTML 字符串
-    .process(matterResult.content);
+    .process(rawContent);
 
   const contentHtml = processedContent.toString();
 
@@ -113,6 +162,7 @@ export async function getPostData(id: string) {
   return {
     id,
     contentHtml,
-    ...(matterResult.data as { title: string; date: string; tags: string[]; category: string; description: string }),
+    ...(frontmatterData as { title: string; date: string; tags: string[]; category: string; description: string }),
+    source,
   };
 }

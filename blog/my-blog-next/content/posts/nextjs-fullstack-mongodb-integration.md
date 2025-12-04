@@ -199,11 +199,66 @@ fetch('/api/posts', {
 2.  点击 **Browse Collections**。
 3.  在 `my-blog` 数据库下的 `posts` 集合中，成功找到了刚才写入的文档。
 
-## 6. 总结与下一步
+## 6. 实现前台混合展示 (Hybrid Mode)
 
-至此，我们已经打通了 **Next.js -> API -> MongoDB Atlas** 的全栈链路。虽然现在任何人都可以调用这个 API 发文章，这显然是不安全的。
+数据库里有了文章，接下来要让博客前台能展示它们。我的目标是：**同时保留本地 Markdown 文章和数据库动态文章**。
 
-接下来的计划 (Phase 3)：
-1.  **安全鉴权**：实现管理员登录功能，保护写操作 API。
-2.  **前台展示**：改造首页，使其能同时展示本地 Markdown 文章和数据库中的动态文章。
+### 6.1 改造数据获取逻辑
+
+我修改了 `src/lib/posts.ts`，将核心函数 `getSortedPostsData` 改造为异步函数，并增加了混合逻辑：
+
+```typescript
+export async function getSortedPostsData(): Promise<PostData[]> {
+  // 1. 获取本地 Markdown 文章
+  let localPosts: PostData[] = [];
+  if (fs.existsSync(postsDirectory)) {
+    // ...读取本地文件逻辑
+    localPosts = /* ... */;
+  }
+
+  // 2. 获取 MongoDB 文章 (只查询已发布的)
+  let dbPosts: PostData[] = [];
+  try {
+    await dbConnect();
+    const posts = await Post.find({ published: true }).sort({ date: -1 }).lean();
+    dbPosts = posts.map(post => ({
+      id: post.slug,
+      title: post.title,
+      date: new Date(post.date).toISOString().split('T')[0],
+      source: 'database', // 标记来源
+      // ...其他字段
+    }));
+  } catch (error) {
+    console.error('Failed to fetch db posts:', error);
+  }
+
+  // 3. 合并并按日期倒序
+  return [...localPosts, ...dbPosts].sort((a, b) => (a.date < b.date ? 1 : -1));
+}
+```
+
+同时，我也改造了获取单篇文章详情的 `getPostData(id)` 函数，使其支持“如果本地找不到，就去数据库找”的逻辑。
+
+### 6.2 页面组件异步化
+
+由于数据获取变成了异步操作，我必须将所有调用它的页面组件 (`src/app/page.tsx` 和 `src/app/posts/page.tsx`) 改为 Server Component 的异步形式：
+
+```tsx
+// src/app/page.tsx
+export default async function Home() {
+  // 必须加 await
+  const allPostsData = await getSortedPostsData();
+  return <HomePageContent posts={allPostsData} />;
+}
+```
+
+这一步踩了个小坑：一开始忘记修改文章列表页 (`src/app/posts/page.tsx`)，导致 Promise 对象被直接传给了组件，报了 `posts.map is not a function` 的错。加上 `async/await` 后完美解决。
+
+## 7. 总结与下一步
+
+至此，我的博客已经成功进化为 **Hybrid 博客**：既能像以前一样写 Markdown 文件发布，也能通过 API 动态发布文章。
+
+接下来的挑战 (Phase 3 后半部分)：
+- **安全鉴权**：目前任何人都能调用 API 发文章，我需要实现一个简单的管理员登录系统（使用 NextAuth.js）。
+- **后台管理界面**：对着 JSON 写文章太痛苦了，我需要一个可视化的后台管理页面。
 

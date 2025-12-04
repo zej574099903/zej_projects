@@ -6,8 +6,8 @@ export const metadata = {
   description: '所有的技术文章和思考',
 };
 
-export default function PostsPage() {
-  const allPostsData = getSortedPostsData();
+export default async function PostsPage() {
+  const allPostsData = await getSortedPostsData();
 
   return (
     <div className="max-w-4xl mx-auto">
