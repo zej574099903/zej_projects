@@ -52,14 +52,17 @@ export default async function AdminPage() {
           </Link>
 
           {/* 功能卡片：文章管理 */}
-          <div className="block p-6 bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 opacity-50 cursor-not-allowed">
+          <Link 
+            href="/admin/posts"
+            className="block p-6 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700"
+          >
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              📚 文章管理 (开发中)
+              📚 文章管理
             </h3>
             <p className="text-gray-500 dark:text-gray-400 text-sm">
               查看、编辑和删除现有文章。
             </p>
-          </div>
+          </Link>
         </div>
       </div>
     </div>
