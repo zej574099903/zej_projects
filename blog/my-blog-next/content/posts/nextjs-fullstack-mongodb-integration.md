@@ -143,6 +143,67 @@ const Post: Model<IPostDocument> = mongoose.models.Post || mongoose.model('Post'
 export default Post;
 ```
 
-## 4. 总结
+## 5. 开发后端 API (Route Handlers)
 
-至此，我们已经完成了数据库的基础设施建设。下一步，我们将利用 Next.js 的 API Routes (Route Handlers) 来实现文章的增删改查接口。
+基础设施准备好后，我创建了第一个 API 路由来测试数据库的读写能力。
+
+在 Next.js App Router 中，API 路由通常定义在 `app/api/[route]/route.ts` 中。我创建了 `src/app/api/posts/route.ts`：
+
+```typescript
+import { NextRequest, NextResponse } from 'next/server';
+import dbConnect from '@/lib/db';
+import Post from '@/models/Post';
+
+// GET /api/posts - 获取所有文章
+export async function GET() {
+  await dbConnect();
+  const posts = await Post.find({}).sort({ date: -1 });
+  return NextResponse.json({ success: true, data: posts });
+}
+
+// POST /api/posts - 创建新文章
+export async function POST(request: NextRequest) {
+  await dbConnect();
+  const body = await request.json();
+  const post = await Post.create(body);
+  return NextResponse.json({ success: true, data: post }, { status: 201 });
+}
+```
+
+### 5.1 验证与测试
+
+为了验证接口是否工作，我直接在浏览器控制台 (DevTools) 中使用 `fetch` 发送了一个 POST 请求：
+
+```javascript
+fetch('/api/posts', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    title: "我的第一篇数据库文章",
+    slug: "my-first-db-post",
+    content: "## Hello World\n这是直接保存到 MongoDB 的内容！",
+    tags: ["Test", "MongoDB"],
+    published: true
+  })
+})
+.then(res => res.json())
+.then(data => console.log(data));
+```
+
+**结果成功！** 控制台返回了创建成功的文章对象，包含 `_id` 和 `createdAt` 时间戳。
+
+### 5.2 在 MongoDB Atlas 中查看数据
+
+数据写入成功后，我登录 MongoDB Atlas 后台进行了确认：
+1.  进入 **Database** -> **Clusters**。
+2.  点击 **Browse Collections**。
+3.  在 `my-blog` 数据库下的 `posts` 集合中，成功找到了刚才写入的文档。
+
+## 6. 总结与下一步
+
+至此，我们已经打通了 **Next.js -> API -> MongoDB Atlas** 的全栈链路。虽然现在任何人都可以调用这个 API 发文章，这显然是不安全的。
+
+接下来的计划 (Phase 3)：
+1.  **安全鉴权**：实现管理员登录功能，保护写操作 API。
+2.  **前台展示**：改造首页，使其能同时展示本地 Markdown 文章和数据库中的动态文章。
+
