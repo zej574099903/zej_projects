@@ -262,3 +262,70 @@ export default async function Home() {
 - **安全鉴权**：目前任何人都能调用 API 发文章，我需要实现一个简单的管理员登录系统（使用 NextAuth.js）。
 - **后台管理界面**：对着 JSON 写文章太痛苦了，我需要一个可视化的后台管理页面。
 
+## 8. 给 API 加上安全锁 (NextAuth.js)
+
+为了防止任何人都能通过 API 往我的数据库里塞文章，我引入了 **NextAuth.js (Auth.js v5)** 来实现管理员鉴权。
+
+### 8.1 安装与配置
+
+首先安装依赖：
+```bash
+npm install next-auth@beta
+```
+
+然后创建 `src/auth.ts` 配置文件，使用最简单的 Credentials 模式（用户名+密码）：
+
+```typescript
+import NextAuth from 'next-auth';
+import Credentials from 'next-auth/providers/credentials';
+
+export const { handlers, signIn, signOut, auth } = NextAuth({
+  providers: [
+    Credentials({
+      credentials: {
+        password: { label: "Password", type: "password" }
+      },
+      authorize: async (credentials) => {
+        // 简单的密码比对，密码存储在环境变量中
+        if (credentials?.password === process.env.ADMIN_PASSWORD) {
+          return { id: "1", name: "Admin", email: "admin@example.com" };
+        }
+        return null;
+      },
+    }),
+  ],
+});
+```
+
+并在环境变量 `.env.local` 中设置密钥：
+```env
+AUTH_SECRET="我的随机加密串"
+ADMIN_PASSWORD="我的超强密码"
+```
+
+### 8.2 保护 API 路由
+
+最后，我在写文章的 API (`POST /api/posts`) 中加入了权限检查：
+
+```typescript
+import { auth } from '@/auth';
+
+export async function POST(request: NextRequest) {
+  // 0. 权限验证
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // ... 原有的数据库写入逻辑
+}
+```
+
+这样，如果没有登录，任何 POST 请求都会直接收到 401 错误。我的博客终于安全了！
+
+## 9. 最终总结
+
+从零开始连接 MongoDB，到实现混合数据展示，再到加上安全鉴权。这个过程让我深刻理解了 Next.js App Router 的强大之处——它真的让全栈开发变得非常丝滑。
+
+下一步，我将构建一个**后台管理面板 (Admin Dashboard)**，让我能优雅地在网页上写文章，而不是手写 JSON。
+

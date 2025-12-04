@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Post from '@/models/Post';
+import { auth } from '@/auth';
 
-// GET /api/posts - 获取所有文章
+// GET /api/posts - 获取所有文章 (公开接口)
 export async function GET() {
   try {
     // 1. 连接数据库
@@ -21,9 +22,15 @@ export async function GET() {
   }
 }
 
-// POST /api/posts - 创建新文章
+// POST /api/posts - 创建新文章 (受保护接口)
 export async function POST(request: NextRequest) {
   try {
+    // 0. 权限验证
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
+
     // 1. 连接数据库
     await dbConnect();
 
