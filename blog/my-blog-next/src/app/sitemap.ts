@@ -1,8 +1,8 @@
 import { MetadataRoute } from 'next';
 import { getSortedPostsData } from '@/lib/posts';
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const allPosts = getSortedPostsData();
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const allPosts = await getSortedPostsData();
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zej-projects-955ocoomd-jhons-projects-97ec523f.vercel.app/';
 
   const posts = allPosts.map((post) => ({
