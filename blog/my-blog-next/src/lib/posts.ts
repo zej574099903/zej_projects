@@ -144,24 +144,29 @@ export async function getPostData(id: string) {
   } 
   // 2. 尝试从数据库读取
   else {
-    await dbConnect();
-    // 查找 slug 匹配的文章
-    const post = await Post.findOne({ slug: id }).lean<IPostDocument>();
-    
-    if (!post) {
-      // 如果两边都找不到，抛出错误，页面会显示 404
-      throw new Error(`Post not found: ${id}`);
-    }
+    try {
+      await dbConnect();
+      // 查找 slug 匹配的文章
+      const post = await Post.findOne({ slug: id }).lean<IPostDocument>();
+      
+      if (!post) {
+        // 如果两边都找不到，抛出错误，页面会显示 404
+        throw new Error(`Post not found: ${id}`);
+      }
 
-    rawContent = post.content;
-    frontmatterData = {
-      title: post.title,
-      date: new Date(post.date).toISOString().split('T')[0],
-      tags: post.tags,
-      category: post.category || 'Uncategorized',
-      description: post.excerpt || '',
-    };
-    source = 'database';
+      rawContent = post.content;
+      frontmatterData = {
+        title: post.title,
+        date: new Date(post.date).toISOString().split('T')[0],
+        tags: post.tags,
+        category: post.category || 'Uncategorized',
+        description: post.excerpt || '',
+      };
+      source = 'database';
+    } catch (error) {
+      console.error(`Failed to fetch post '${id}' from database:`, error);
+      throw error; // 继续抛出，因为如果是 SSG，这里失败意味着页面无法生成
+    }
   }
 
   // 3. 使用 unified 管道将 markdown 转换为 HTML
