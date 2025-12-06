@@ -1,6 +1,8 @@
 import { getAllPostIds, getPostData, PostData } from '@/lib/posts';
 import { Comments } from '@/components/comments';
 import { ViewCounter } from '@/components/view-counter';
+import { ReadingProgress } from '@/components/reading-progress';
+import { CodeBlockEnhancer } from '@/components/code-block-enhancer';
 import { Metadata } from 'next';
 import { Folder } from 'lucide-react';
 
@@ -32,7 +34,9 @@ export default async function Post({ params }: Props) {
   const postData = await getPostData(id) as PostData;
 
   return (
-    <article className="max-w-3xl mx-auto">
+    <article className="max-w-3xl mx-auto relative">
+      <ReadingProgress />
+      
       <header className="mb-8 text-center">
         {postData.category && (
           <div className="flex items-center justify-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 mb-4">
@@ -66,6 +70,7 @@ export default async function Post({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: postData.contentHtml || '' }} 
       />
 
+      <CodeBlockEnhancer />
       <Comments />
     </article>
   );
