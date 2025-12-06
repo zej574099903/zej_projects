@@ -1,6 +1,8 @@
 import { getSortedPostsData } from '@/lib/posts';
 import { PostsList } from '@/components/posts-list';
 
+export const revalidate = 3600;
+
 export const metadata = {
   title: '文章列表 | My Blog',
   description: '所有的技术文章和思考',

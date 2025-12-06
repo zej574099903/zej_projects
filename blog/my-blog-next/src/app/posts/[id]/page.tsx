@@ -19,8 +19,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+export const revalidate = 3600;
+
 export async function generateStaticParams() {
-  const paths = getAllPostIds();
+  const paths = await getAllPostIds();
   return paths.map((path) => path.params);
 }
 

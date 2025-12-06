@@ -1,6 +1,8 @@
 import { getSortedPostsData } from '@/lib/posts';
 import HomePageContent from '@/components/home-page-content';
 
+export const revalidate = 3600;
+
 export default async function Home() {
   const allPostsData = await getSortedPostsData();
   console.log('Server: Fetched posts count:', allPostsData.length);

@@ -82,19 +82,40 @@ export async function getSortedPostsData(): Promise<PostData[]> {
 
 /**
  * 获取所有文章 ID 列表（用于 generateStaticParams）
+ * 支持混合数据源：本地 Markdown + MongoDB
  */
-export function getAllPostIds() {
-  if (!fs.existsSync(postsDirectory)) {
-    return [];
-  }
-  const fileNames = fs.readdirSync(postsDirectory);
-  return fileNames.map((fileName) => {
-    return {
+export async function getAllPostIds() {
+  // 1. 获取本地 Markdown 文章 ID
+  let localIds: { params: { id: string } }[] = [];
+  if (fs.existsSync(postsDirectory)) {
+    const fileNames = fs.readdirSync(postsDirectory);
+    localIds = fileNames.map((fileName) => ({
       params: {
         id: fileName.replace(/\.md$/, ''),
       },
-    };
-  });
+    }));
+  }
+
+  // 2. 获取 MongoDB 文章 ID
+  let dbIds: { params: { id: string } }[] = [];
+  try {
+    await dbConnect();
+    // 只查询已发布的文章，只取 slug 字段
+    const posts = await Post.find({ published: true }).select('slug').lean<IPostDocument[]>();
+    
+    dbIds = posts.map((post) => ({
+      params: {
+        id: post.slug,
+      },
+    }));
+  } catch (error) {
+    console.error('Failed to fetch post IDs from database:', error);
+    // 数据库挂了不影响本地文章
+  }
+
+  // 3. 合并去重 (以防万一本地和数据库有同名 slug，优先取本地? 或者只是简单合并)
+  // 这里简单合并，如果 slug 重复，generateStaticParams 会处理或者后者覆盖
+  return [...localIds, ...dbIds];
 }
 
 /**
