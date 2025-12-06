@@ -70,8 +70,9 @@ export async function getSortedPostsData(): Promise<PostData[]> {
       source: 'database',
     }));
   } catch (error) {
-    console.error('Failed to fetch posts from database:', error);
-    // 数据库挂了不影响本地文章展示
+    console.error('Failed to fetch posts from database (Build/Runtime error):', error);
+    // 降级处理：数据库挂了不影响本地文章展示，也不中断构建
+    dbPosts = [];
   }
 
   // 3. 合并并排序
@@ -115,8 +116,9 @@ export async function getAllPostIds() {
       },
     }));
   } catch (error) {
-    console.error('Failed to fetch post IDs from database:', error);
-    // 数据库挂了不影响本地文章
+    console.error('Failed to fetch post IDs from database (Build/Runtime error):', error);
+    // 降级处理：数据库挂了，只构建本地文章
+    dbIds = [];
   }
 
   // 3. 合并去重 (以防万一本地和数据库有同名 slug，优先取本地? 或者只是简单合并)
@@ -164,8 +166,11 @@ export async function getPostData(id: string) {
       };
       source = 'database';
     } catch (error) {
-      console.error(`Failed to fetch post '${id}' from database:`, error);
-      throw error; // 继续抛出，因为如果是 SSG，这里失败意味着页面无法生成
+      console.error(`Failed to fetch post '${id}' from database (Build/Runtime error):`, error);
+      // 如果是 SSG 构建阶段且数据库连不上，这里抛出会导致该页面构建失败。
+      // 但由于我们在 getAllPostIds 里已经过滤了数据库 ID，所以理论上构建时不会走到这里（除非 ID 是本地的但文件不见了去查数据库）。
+      // 运行时如果连不上，抛出错误显示 Error Boundary 是合理的。
+      throw error;
     }
   }
 
