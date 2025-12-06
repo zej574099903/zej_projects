@@ -3,7 +3,10 @@ import path from 'path';
 import matter from 'gray-matter';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
+import remarkGfm from 'remark-gfm';
 import remarkRehype from 'remark-rehype';
+import rehypeSlug from 'rehype-slug';
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypePrettyCode from 'rehype-pretty-code';
 import rehypeStringify from 'rehype-stringify';
 import dbConnect from './db';
@@ -164,7 +167,10 @@ export async function getPostData(id: string) {
   // 3. 使用 unified 管道将 markdown 转换为 HTML
   const processedContent = await unified()
     .use(remarkParse) // 解析 markdown
+    .use(remarkGfm) // 支持 GitHub Flavor Markdown (表格、任务列表等)
     .use(remarkRehype) // 转换为 HTML AST
+    .use(rehypeSlug) // 给标题添加 ID
+    .use(rehypeAutolinkHeadings, { behavior: 'wrap' }) // 给标题添加锚点链接
     .use(rehypePrettyCode, {
       // 代码高亮配置
       theme: 'github-dark',
