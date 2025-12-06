@@ -1,5 +1,6 @@
-import { getAllPostIds, getPostData } from '@/lib/posts';
+import { getAllPostIds, getPostData, PostData } from '@/lib/posts';
 import { Comments } from '@/components/comments';
+import { ViewCounter } from '@/components/view-counter';
 import { Metadata } from 'next';
 import { Folder } from 'lucide-react';
 
@@ -28,7 +29,7 @@ export async function generateStaticParams() {
 
 export default async function Post({ params }: Props) {
   const { id } = await params;
-  const postData = await getPostData(id);
+  const postData = await getPostData(id) as PostData;
 
   return (
     <article className="max-w-3xl mx-auto">
@@ -42,8 +43,12 @@ export default async function Post({ params }: Props) {
         <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-50 sm:text-4xl mb-2">
           {postData.title}
         </h1>
-        <div className="text-gray-500 dark:text-gray-400">
+        <div className="text-gray-500 dark:text-gray-400 flex items-center justify-center gap-4">
           <time>{postData.date}</time>
+          {/* 使用 ViewCounter 组件显示阅读量，并自动触发计数 */}
+          {/* 传入 initialViews 可以在数据库文章加载时提供即时反馈(虽然是旧值) */}
+          {/* 对于本地文章，initialViews 是 0，组件加载后会更新为真实值 */}
+          <ViewCounter slug={id} initialViews={postData.views} />
         </div>
         {postData.tags && postData.tags.length > 0 && (
           <div className="flex gap-2 justify-center mt-4">

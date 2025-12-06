@@ -14,6 +14,7 @@ export interface IPost {
   category?: string;    // 分类
   coverImage?: string;  // 封面图 URL (可选)
   published: boolean;   // 是否已发布 (用于草稿功能)
+  views: number;        // 阅读量
   createdAt: Date;      // 创建时间 (数据库自动生成)
   updatedAt: Date;      // 更新时间 (数据库自动生成)
 }
@@ -67,6 +68,10 @@ const PostSchema = new Schema<IPostDocument>(
       type: Boolean,
       default: false, // 默认是草稿
     },
+    views: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     // 自动添加 createdAt 和 updatedAt 字段
@@ -75,7 +80,11 @@ const PostSchema = new Schema<IPostDocument>(
 );
 
 // 防止在热重载时重复编译模型
-// 如果 mongoose.models.Post 已经存在，就使用它；否则创建一个新的模型
+// 在开发环境下，如果 Schema 发生了变化，我们需要删除旧的模型缓存
+if (process.env.NODE_ENV === 'development' && mongoose.models.Post) {
+  delete mongoose.models.Post;
+}
+
 const Post: Model<IPostDocument> =
   mongoose.models.Post || mongoose.model<IPostDocument>('Post', PostSchema);
 

@@ -18,6 +18,7 @@ export interface PostData {
   category: string;
   description: string;
   contentHtml?: string;
+  views?: number; // 阅读量
   source?: 'local' | 'database'; // 标识来源
 }
 
@@ -42,6 +43,7 @@ export async function getSortedPostsData(): Promise<PostData[]> {
       return {
         id,
         ...(matterResult.data as { title: string; date: string; tags: string[]; category: string; description: string }),
+        views: 0,
         source: 'local',
       };
     });
@@ -61,6 +63,7 @@ export async function getSortedPostsData(): Promise<PostData[]> {
       tags: post.tags,
       category: post.category || 'Uncategorized',
       description: post.excerpt || '',
+      views: post.views || 0,
       source: 'database',
     }));
   } catch (error) {
