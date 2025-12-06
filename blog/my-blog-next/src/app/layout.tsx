@@ -5,8 +5,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { ThemeProvider } from "@/components/theme-provider";
 
-import { getSortedPostsData } from '@/lib/posts';
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -50,8 +48,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const allPostsData = await getSortedPostsData();
-
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <body
@@ -63,7 +59,7 @@ export default async function RootLayout({
           forcedTheme="light"
           disableTransitionOnChange
         >
-          <Header posts={allPostsData} />
+          <Header />
           
           {/* 主要内容区域，移除全局宽度限制 */}
           <main className="flex-1 w-full">

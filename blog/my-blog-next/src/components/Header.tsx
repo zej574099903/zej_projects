@@ -1,12 +1,7 @@
 import Link from 'next/link';
-import { Search } from '@/components/search';
-import { PostData } from '@/lib/posts';
+import { AISearch } from '@/components/ai-search';
 
-interface HeaderProps {
-  posts?: PostData[];
-}
-
-export default function Header({ posts = [] }: HeaderProps) {
+export default function Header() {
   return (
     <header className="border-b border-gray-200 bg-white dark:bg-black dark:border-gray-800 sticky top-0 z-40 backdrop-blur-md bg-white/80 dark:bg-black/80 supports-[backdrop-filter]:bg-white/60">
       {/* max-w-4xl mx-auto 限制内容最大宽度并居中，与正文保持一致 */}
@@ -33,8 +28,8 @@ export default function Header({ posts = [] }: HeaderProps) {
           {/* 分隔线 */}
           <div className="h-4 w-px bg-gray-200 dark:bg-gray-800" />
 
-          {/* 搜索组件 */}
-          <Search posts={posts} />
+          {/* AI 搜索组件 */}
+          <AISearch />
         </div>
       </div>
     </header>

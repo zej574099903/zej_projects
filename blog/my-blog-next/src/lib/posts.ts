@@ -196,3 +196,14 @@ export async function getPostData(id: string) {
     source,
   };
 }
+
+/**
+ * 获取文章的原始 Markdown 内容（用于 AI 分析）
+ */
+export function getPostRawContent(id: string): string | null {
+  const fullPath = path.join(postsDirectory, `${id}.md`);
+  if (fs.existsSync(fullPath)) {
+    return fs.readFileSync(fullPath, 'utf8');
+  }
+  return null;
+}
